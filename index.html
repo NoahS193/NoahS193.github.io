@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Noah Simpson Portfolio</title>
+<meta name="description" content="Noah Simpson: game and graphics programmer. Gameplay systems in Unity and C#, engine and rendering work in C++ and OpenGL.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* layout: left-aligned single column, hero splits intro / live cave generator, projects in a two-column index under one lead entry */
+:root {
+  --paper: #edefe8;
+  --surface: #f7f8f3;
+  --ink: #181b24;
+  --muted: #565b69;
+  --line: #c6c9bf;
+  --accent: #2d44e0;
+  --accent-ink: #ffffff;
+  --progress: #8a5200;
+  --progress-bg: #f3e2c4;
+  --wall: #1f2433;
+  --floor: #f7f8f3;
+  --display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12151d;
+    --surface: #191d27;
+    --ink: #e5e7e0;
+    --muted: #9ba1ae;
+    --line: #2c313d;
+    --accent: #8d9cff;
+    --accent-ink: #10131b;
+    --progress: #f0b45a;
+    --progress-bg: #3a2c15;
+    --wall: #303849;
+    --floor: #0e1016;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12151d;
+  --surface: #191d27;
+  --ink: #e5e7e0;
+  --muted: #9ba1ae;
+  --line: #2c313d;
+  --accent: #8d9cff;
+  --accent-ink: #10131b;
+  --progress: #f0b45a;
+  --progress-bg: #3a2c15;
+  --wall: #303849;
+  --floor: #0e1016;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1.0625rem/1.6 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+a:hover { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+ul { margin: 0; padding: 0; }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); }
+
+/* ---- header ---- */
+.top { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 22px 0; }
+.top .mark { font-family: var(--display); font-stretch: 112%; font-weight: 700; text-decoration: none; font-size: 1.05rem; }
+.top nav { display: flex; gap: clamp(14px, 3vw, 28px); font-size: .95rem; }
+.top nav a { text-decoration: none; color: var(--muted); }
+.top nav a:hover { color: var(--ink); }
+
+/* ---- hero ---- */
+.hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(28px, 5vw, 64px); align-items: start; padding: clamp(24px, 6vw, 72px) 0 clamp(48px, 7vw, 88px); }
+.hero h1 { font-stretch: 125%; font-weight: 850; font-size: clamp(2.7rem, 6.4vw, 4.9rem); line-height: .92; letter-spacing: -.025em; }
+.hero .lede { margin-top: 28px; font-size: clamp(1.15rem, 1.8vw, 1.32rem); line-height: 1.5; max-width: 30ch; }
+.hero .sub { margin-top: 16px; color: var(--muted); max-width: 46ch; }
+.hero .cta { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; font: 500 .95rem/1 var(--body); padding: 12px 18px; border-radius: 6px; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); text-decoration: none; cursor: pointer; }
+.btn:hover { color: var(--ink); background: var(--surface); }
+.btn.primary { background: var(--ink); color: var(--paper); }
+.btn.primary:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+.map { margin: 0; }
+.map .frame { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--floor); line-height: 0; }
+.map canvas { width: 100%; height: auto; display: block; aspect-ratio: 72 / 44; }
+.map .controls { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg button { font: 500 .875rem/1 var(--body); padding: 9px 12px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.link-btn { font: 500 .875rem/1 var(--body); background: none; border: 0; color: var(--accent); cursor: pointer; padding: 9px 2px; text-decoration: underline; text-underline-offset: 3px; }
+.readout { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 16px 0 0; font-size: .875rem; }
+.readout div { border-top: 1px solid var(--line); padding-top: 8px; }
+.readout dt { color: var(--muted); }
+.readout dd { margin: 2px 0 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.map figcaption { margin-top: 14px; font-size: .875rem; color: var(--muted); max-width: 60ch; line-height: 1.5; }
+
+/* ---- sections ---- */
+section.block { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--line); }
+.block-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 20px; margin-bottom: 36px; }
+.block-head h2 { font-stretch: 118%; font-weight: 800; font-size: clamp(1.9rem, 3.6vw, 2.6rem); letter-spacing: -.015em; line-height: 1; }
+.block-head p { color: var(--muted); max-width: 52ch; margin-top: 10px; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.filters button { font: 500 .875rem/1 var(--body); padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; }
+.filters button:hover { border-color: var(--ink); }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.filters .n { font-variant-numeric: tabular-nums; color: var(--muted); margin-left: 4px; }
+.filters button[aria-pressed="true"] .n { color: inherit; opacity: .7; }
+
+/* ---- projects ---- */
+.projects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(28px, 5vw, 64px); }
+.proj { border-top: 1px solid var(--line); padding: 28px 0 36px; display: flex; flex-direction: column; gap: 14px; }
+.proj[hidden] { display: none; }
+.proj h3 { font-stretch: 110%; font-weight: 750; font-size: 1.45rem; line-height: 1.15; letter-spacing: -.01em; }
+.proj .what { color: var(--muted); font-size: .95rem; }
+.proj p.desc { max-width: 60ch; }
+.proj ul.points { list-style: none; display: grid; gap: 8px; font-size: .95rem; }
+.proj ul.points li { padding-left: 18px; position: relative; }
+.proj ul.points li::before { content: ""; position: absolute; left: 0; top: .62em; width: 8px; height: 8px; background: var(--wall); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: .8125rem; line-height: 1; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.tag.wip { border-color: transparent; background: var(--progress-bg); color: var(--progress); font-weight: 600; }
+
+.proj.lead { grid-column: 1 / -1; border-top: 2px solid var(--ink); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 20px clamp(28px, 5vw, 64px); padding-bottom: 44px; }
+.proj.lead h3 { font-stretch: 120%; font-weight: 850; font-size: clamp(1.8rem, 3.4vw, 2.4rem); }
+.proj.lead .intro { display: flex; flex-direction: column; gap: 14px; }
+.proj.lead .owned h4 { margin: 0 0 12px; font: 600 1rem/1.3 var(--body); }
+.proj.lead ul.points { gap: 12px; font-size: 1rem; }
+.proj.lead ul.points strong { font-weight: 600; }
+.media { margin: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--surface); line-height: 0; }
+.media[hidden] { display: none; }
+.media video, .media img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.proj.lead .media { grid-column: 1 / -1; }
+.proj.lead .figure-stat { margin-top: 8px; }
+.empty { grid-column: 1 / -1; color: var(--muted); padding: 24px 0; }
+
+/* ---- research ---- */
+.research { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(28px, 5vw, 64px); }
+.research p + p { margin-top: 14px; }
+.methods { list-style: none; display: grid; gap: 0; }
+.methods li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 20px; align-items: baseline; border-top: 1px solid var(--line); padding: 16px 0; }
+.methods li:last-child { border-bottom: 1px solid var(--line); }
+.methods strong { font-weight: 600; }
+.methods span { grid-column: 1; color: var(--muted); font-size: .95rem; }
+.methods .link-btn { grid-row: 1 / span 2; grid-column: 2; align-self: center; }
+.figure-stat { font-family: var(--display); font-stretch: 125%; font-weight: 850; font-size: clamp(3rem, 7vw, 5rem); line-height: 1; letter-spacing: -.03em; margin-top: 28px; font-variant-numeric: tabular-nums; }
+.figure-stat + p { color: var(--muted); }
+
+/* ---- toolbox ---- */
+.toolbox { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px clamp(28px, 5vw, 64px); }
+.toolbox h3 { font: 600 1rem/1.3 var(--body); margin-bottom: 12px; }
+.toolbox ul { list-style: none; display: grid; gap: 6px; color: var(--muted); }
+
+/* ---- contact ---- */
+.contact { padding: clamp(56px, 8vw, 104px) 0 40px; border-top: 2px solid var(--ink); }
+.contact h2 { font-stretch: 125%; font-weight: 850; font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: .95; letter-spacing: -.025em; max-width: 16ch; }
+.contact p { margin-top: 18px; color: var(--muted); max-width: 52ch; }
+.contact .links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--line); font-size: .875rem; color: var(--muted); }
+
+@media (max-width: 860px) {
+  .hero, .research, .proj.lead { grid-template-columns: minmax(0, 1fr); }
+  .projects { grid-template-columns: minmax(0, 1fr); }
+  .toolbox { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .toolbox { grid-template-columns: minmax(0, 1fr); }
+  .top nav a.opt { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <a class="mark" href="#top">Noah Simpson</a>
+    <nav aria-label="Sections">
+      <a href="#work">Projects</a>
+      <a href="#toolbox" class="opt">Toolbox</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- ---- hero ---- -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <h1 id="hero-title">Noah<br>Simpson</h1>
+        <p class="lede">Game and graphics programmer. I build gameplay systems in Unity and engine-level code in C++.</p>
+        <p class="sub">Final-year Bachelor of Software Engineering student. Recent work covers procedural dungeons, loot and difficulty systems, an active-ragdoll brawler and an OpenGL model viewer.</p>
+        <div class="cta">
+          <a class="btn primary" href="#work">See projects</a>
+          <a class="btn" href="#contact">Get in touch</a>
+        </div>
+      </div>
+
+      <figure class="map" aria-labelledby="map-cap">
+        <div class="frame"><canvas id="cave" width="720" height="440" role="img" aria-label="Procedurally generated cave map"></canvas></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Generation method">
+            <button type="button" data-method="random" aria-pressed="false">Random fill</button>
+            <button type="button" data-method="pure" aria-pressed="false">Pure CA</button>
+            <button type="button" data-method="hybrid" aria-pressed="true">Hybrid CA</button>
+          </div>
+          <button type="button" class="link-btn" id="reseed">New seed</button>
+        </div>
+        <dl class="readout" aria-live="polite">
+          <div><dt>Seed</dt><dd id="r-seed">0</dd></div>
+          <div><dt>Step</dt><dd id="r-step">0</dd></div>
+          <div><dt>Open floor</dt><dd id="r-floor">0%</dd></div>
+          <div><dt>Separate caves</dt><dd id="r-caves">0</dd></div>
+        </dl>
+        <figcaption id="map-cap">A 72 × 44 cave grown live with cellular automata, from my dungeon generation research. Switching method keeps the seed, so you can compare all three on the same noise.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ---- projects ---- -->
+    <section class="block" id="work" aria-labelledby="work-title">
+      <div class="block-head">
+        <div>
+          <h2 id="work-title">Projects</h2>
+          <p>Team and solo work across Unity and C++. The systems I owned are listed under each one.</p>
+        </div>
+        <div class="filters" role="group" aria-label="Filter projects">
+          <button type="button" data-filter="all" aria-pressed="true">All<span class="n"></span></button>
+          <button type="button" data-filter="unity" aria-pressed="false">Unity<span class="n"></span></button>
+          <button type="button" data-filter="cpp" aria-pressed="false">C++<span class="n"></span></button>
+          <button type="button" data-filter="graphics" aria-pressed="false">Graphics<span class="n"></span></button>
+          <button type="button" data-filter="research" aria-pressed="false">Research<span class="n"></span></button>
+        </div>
+      </div>
+
+      <!-- media: drop clips in media/ using the file names below, a slot hides itself if its file is missing -->
+      <div class="projects" id="projects">
+
+        <article class="proj lead" data-tags="unity">
+          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/monolith.jpg"><source src="media/monolith.mp4" type="video/mp4"></video></figure>
+          <div class="intro">
+            <h3>Monolith</h3>
+            <p class="what">Team project, Unity and C#</p>
+            <p class="desc">A dungeon-crawling action RPG built by a student team from vertical slice through alpha and beta. I owned most of the systems that decide what a run feels like: what spawns, what drops, how hard it gets and how fast you unlock things.</p>
+            <p class="desc">I ran the balance pass during beta and kept the team's technical and game design docs current for every system I touched.</p>
+            <div class="tags"><span class="tag">Unity</span><span class="tag">C#</span><span class="tag">Procedural generation</span><span class="tag">Systems design</span></div>
+          </div>
+          <div class="owned">
+            <h4>Systems I built</h4>
+            <ul class="points">
+              <li><strong>Dungeon generation.</strong> Room layout with snapping folded into layout validation so rooms can never overlap, plus a trap and room lockdown pass.</li>
+              <li><strong>Difficulty scaling.</strong> Level-scaled dungeon difficulty anchored to a target player level, with chapter-based progression as real game data.</li>
+              <li><strong>Unlock pacing.</strong> A chapter unlock schedule with an early XP curve and a skill point balance reconciled from level.</li>
+              <li><strong>Enemies and elites.</strong> Enemy aggro rules and a roster of elite affixes that can be switched on and off for tuning.</li>
+              <li><strong>Loot and Divine items.</strong> Item generation, equipment stat wiring and a set of unique items with their own gameplay hooks.</li>
+              <li><strong>Runes.</strong> Rune stats and flags, and the rune selection panel UI.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="proj lead" data-tags="research">
+          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/ca-research.jpg"><source src="media/ca-research.mp4" type="video/mp4"></video></figure>
+          <div class="intro">
+            <h3>Cellular Automata for Roguelike Dungeons</h3>
+            <p class="what">Research project</p>
+            <p class="desc">I benchmarked three ways of generating cave-style dungeons across a range of grid sizes, comparing how each one trades speed against playable, connected space. The map at the top of this page runs all three.</p>
+            <p class="figure-stat">540</p>
+            <p class="what">trials across three methods and multiple grid sizes</p>
+            <div class="tags"><span class="tag">Procedural generation</span><span class="tag">Benchmarking</span></div>
+          </div>
+          <ul class="methods">
+            <li><strong>Random fill</strong><span>Noise only. The fastest baseline, with no structure.</span><button type="button" class="link-btn" data-show="random">Show on map</button></li>
+            <li><strong>Pure CA</strong><span>Smoothing passes turn noise into caves, but leave isolated pockets.</span><button type="button" class="link-btn" data-show="pure">Show on map</button></li>
+            <li><strong>Hybrid CA</strong><span>Cellular automata followed by a connectivity pass so every open tile is reachable.</span><button type="button" class="link-btn" data-show="hybrid">Show on map</button></li>
+          </ul>
+        </article>
+
+        <article class="proj" data-tags="unity">
+          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/stick-wars.jpg"><source src="media/stick-wars.mp4" type="video/mp4"></video></figure>
+          <h3>Stick Wars</h3>
+          <p class="what">Unity 6.3, PC and PlayStation 5</p>
+          <p class="desc">A four-player local brawler in the spirit of Stick Fight, where every fighter is a physics-driven ragdoll.</p>
+          <ul class="points">
+            <li>Active-ragdoll stick figures with muscle-driven joints, procedural animation and foot IK</li>
+            <li>Run, jump, wall bounce and melee combat sharing one strike system</li>
+            <li>Twelve data-driven weapons, from pistols and shotguns to swords and spears</li>
+            <li>Five rotating arenas with moving, crumbling and lethal hazards</li>
+          </ul>
+          <div class="tags"><span class="tag">Unity</span><span class="tag">C#</span><span class="tag">Physics</span><span class="tag">Local multiplayer</span></div>
+        </article>
+
+        <article class="proj" data-tags="cpp">
+          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/loot-damage.jpg"><source src="media/loot-damage.mp4" type="video/mp4"></video></figure>
+          <h3>C++ Loot Generator and Mass Damage Resolver</h3>
+          <p class="what">Solo, C++20, Visual Studio</p>
+          <p class="desc">Two ARPG systems in pure C++, written to show how memory layout and ownership affect real game code.</p>
+          <ul class="points">
+            <li>Loot generator rebuilt from Monolith's real loot tables and item modifier data</li>
+            <li>Mass projectile and AoE damage resolver written three ways: smart pointers, array of structures with generational handles, and structure of arrays</li>
+            <li>All three versions produce identical results, so the benchmarks measure memory layout alone</li>
+          </ul>
+          <div class="tags"><span class="tag">C++20</span><span class="tag">Data-oriented design</span><span class="tag">Smart pointers</span><span class="tag">Benchmarks</span></div>
+        </article>
+
+        <article class="proj" data-tags="cpp graphics">
+          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/model-viewer.jpg"><source src="media/model-viewer.mp4" type="video/mp4"></video></figure>
+          <h3>OpenGL Model Viewer</h3>
+          <p class="what">C++ and OpenGL</p>
+          <p class="desc">A model viewer written against raw OpenGL, with my own geometry generation and matrix maths.</p>
+          <ul class="points">
+            <li>UV sphere generation in an interleaved vertex format</li>
+            <li>Hand-written column-major matrices and frame-rate-independent rotation</li>
+          </ul>
+          <div class="tags"><span class="tag">C++</span><span class="tag">OpenGL</span><span class="tag">Rendering</span></div>
+        </article>
+
+        <!-- edit: cloth simulation details still needed -->
+        <article class="proj" data-tags="graphics">
+          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/cloth.jpg"><source src="media/cloth.mp4" type="video/mp4"></video></figure>
+          <h3>Cloth Simulation</h3>
+          <p class="what">[Language and engine]</p>
+          <p class="desc">[One or two sentences on what the simulation does and how it works.]</p>
+          <div class="tags"><span class="tag">Simulation</span></div>
+        </article>
+
+        <article class="proj" data-tags="unity">
+          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/flipside.jpg"><source src="media/flipside.mp4" type="video/mp4"></video></figure>
+          <h3>Flipside</h3>
+          <p class="what">Solo, Unity, Android</p>
+          <p class="desc">A one-tap endless runner where every tap flips gravity. Built solo on a four-week development and two-week testing plan, with ads and in-app purchases.</p>
+          <div class="tags"><span class="tag">Unity</span><span class="tag">Android</span><span class="tag">Ads and IAP</span></div>
+        </article>
+
+        <p class="empty" id="empty" hidden>No projects with that tag yet.</p>
+      </div>
+    </section>
+
+    <!-- ---- toolbox ---- -->
+    <section class="block" id="toolbox" aria-labelledby="toolbox-title">
+      <div class="block-head"><div><h2 id="toolbox-title">Toolbox</h2></div></div>
+      <div class="toolbox">
+        <div>
+          <h3>Languages</h3>
+          <ul><li>C++ (17 and 20)</li><li>C#</li></ul>
+        </div>
+        <div>
+          <h3>Engines and graphics</h3>
+          <ul><li>Unity 6</li><li>OpenGL</li></ul>
+        </div>
+        <div>
+          <h3>Platforms and tools</h3>
+          <ul><li>PlayStation 5 dev kit</li><li>Android</li><li>Visual Studio</li></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="contact" id="contact">
+    <h2>Looking for a graduate role in games</h2>
+    <p>I'm finishing my final semester and open to graduate and junior roles in gameplay, systems or graphics programming.</p>
+    <div class="links">
+      <a class="btn primary" href="mailto:noahsimpson193@gmail.com">noahsimpson193@gmail.com</a>
+      <a class="btn" href="https://github.com/NoahS193">GitHub</a>
+      <a class="btn" href="https://www.linkedin.com/in/noah-simpson-888997440">LinkedIn</a>
+      <a class="btn" href="#contact">CV (PDF)</a>
+    </div>
+    <div class="foot">
+      <span>Noah Simpson, 2026</span>
+      <a href="#top">Back to top</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  // ---- cave generator ----
+  const W = 72, H = 44, FILL = 0.45, ITERS = 5;
+  const canvas = document.getElementById("cave");
+  const ctx = canvas.getContext("2d");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  let method = "hybrid";
+  let seed = 1 + Math.floor(Math.random() * 99999);
+  let frames = [];
+  let shown = 0;
+  let timer = null;
+
+  // small seeded rng so every method sees the same noise
+  function rng(s) {
+    return function () {
+      s |= 0; s = (s + 0x6D2B79F5) | 0;
+      let t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function noise(s) {
+    const r = rng(s);
+    const g = new Uint8Array(W * H);
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const edge = x === 0 || y === 0 || x === W - 1 || y === H - 1;
+        g[y * W + x] = edge || r() < FILL ? 1 : 0;
+      }
+    }
+    return g;
+  }
+
+  // 4-5 rule on the moore neighbourhood
+  function smooth(g) {
+    const out = new Uint8Array(W * H);
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const i = y * W + x;
+        if (x === 0 || y === 0 || x === W - 1 || y === H - 1) { out[i] = 1; continue; }
+        let n = 0;
+        for (let dy = -1; dy <= 1; dy++)
+          for (let dx = -1; dx <= 1; dx++)
+            if (dx || dy) n += g[i + dy * W + dx];
+        out[i] = n > 4 ? 1 : n < 4 ? 0 : g[i];
+      }
+    }
+    return out;
+  }
+
+  // flood fill floor regions, returns label per cell and region sizes
+  function regions(g) {
+    const label = new Int32Array(W * H).fill(-1);
+    const sizes = [];
+    const stack = [];
+    for (let i = 0; i < W * H; i++) {
+      if (g[i] || label[i] !== -1) continue;
+      const id = sizes.length;
+      let size = 0;
+      label[i] = id; stack.push(i);
+      while (stack.length) {
+        const c = stack.pop(); size++;
+        const cx = c % W;
+        const nb = [c - W, c + W, cx > 0 ? c - 1 : -1, cx < W - 1 ? c + 1 : -1];
+        for (const k of nb) {
+          if (k >= 0 && k < W * H && !g[k] && label[k] === -1) { label[k] = id; stack.push(k); }
+        }
+      }
+      sizes.push(size);
+    }
+    return { label, sizes };
+  }
+
+  function build() {
+    const out = [];
+    let g = noise(seed);
+    out.push({ g, step: method === "random" ? "Noise only" : "Noise" });
+    if (method === "random") return out;
+    for (let k = 1; k <= ITERS; k++) {
+      g = smooth(g);
+      out.push({ g, step: "Pass " + k + " of " + ITERS });
+    }
+    if (method === "pure") return out;
+    // connectivity pass, flag the islands first then fill them
+    const { label, sizes } = regions(g);
+    let keep = 0;
+    sizes.forEach((s, id) => { if (s > sizes[keep]) keep = id; });
+    const mark = new Uint8Array(W * H);
+    const clean = g.slice();
+    for (let i = 0; i < W * H; i++) {
+      if (!g[i] && label[i] !== keep) { mark[i] = 1; clean[i] = 1; }
+    }
+    out.push({ g, mark, step: "Connectivity pass" });
+    out.push({ g: clean, step: "Connected" });
+    return out;
+  }
+
+  function color(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function draw(f) {
+    const dpr = window.devicePixelRatio || 1;
+    const cssW = canvas.clientWidth || 720;
+    const pxW = Math.round(cssW * dpr);
+    const pxH = Math.round(cssW * H / W * dpr);
+    if (canvas.width !== pxW || canvas.height !== pxH) { canvas.width = pxW; canvas.height = pxH; }
+    const cw = pxW / W, ch = pxH / H;
+
+    ctx.fillStyle = color("--floor");
+    ctx.fillRect(0, 0, pxW, pxH);
+
+    ctx.fillStyle = color("--wall");
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        if (f.g[y * W + x]) ctx.fillRect(Math.floor(x * cw), Math.floor(y * ch), Math.ceil(cw), Math.ceil(ch));
+      }
+    }
+    if (f.mark) {
+      ctx.fillStyle = color("--accent");
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          if (f.mark[y * W + x]) ctx.fillRect(Math.floor(x * cw), Math.floor(y * ch), Math.ceil(cw), Math.ceil(ch));
+        }
+      }
+    }
+
+    // readout
+    let open = 0, inner = (W - 2) * (H - 2);
+    for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) if (!f.g[y * W + x]) open++;
+    document.getElementById("r-seed").textContent = seed;
+    document.getElementById("r-step").textContent = f.step;
+    document.getElementById("r-floor").textContent = Math.round(open / inner * 100) + "%";
+    document.getElementById("r-caves").textContent = regions(f.g).sizes.length;
+  }
+
+  function play() {
+    clearTimeout(timer);
+    frames = build();
+    if (reduceMotion) { shown = frames.length - 1; draw(frames[shown]); return; }
+    shown = 0;
+    const tick = () => {
+      draw(frames[shown]);
+      if (shown < frames.length - 1) {
+        const hold = frames[shown].mark ? 700 : 240;
+        shown++;
+        timer = setTimeout(tick, hold);
+      }
+    };
+    tick();
+  }
+
+  function setMethod(m) {
+    method = m;
+    document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.method === m)));
+    play();
+  }
+
+  document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => setMethod(b.dataset.method)));
+  document.getElementById("reseed").addEventListener("click", () => { seed = 1 + Math.floor(Math.random() * 99999); play(); });
+  document.querySelectorAll("[data-show]").forEach(b => b.addEventListener("click", () => {
+    setMethod(b.dataset.show);
+    document.querySelector(".map").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+  }));
+
+  // redraw on resize and theme change
+  if ("ResizeObserver" in window) new ResizeObserver(() => frames[shown] && draw(frames[shown])).observe(canvas);
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => frames[shown] && draw(frames[shown]));
+  new MutationObserver(() => frames[shown] && draw(frames[shown])).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  play();
+
+  // ---- project media ----
+  document.querySelectorAll(".media").forEach(fig => {
+    const video = fig.querySelector("video");
+    const source = video && video.querySelector("source");
+    if (!source) return;
+    // hide the slot until a clip actually loads
+    if (video.readyState < 1) {
+      fig.hidden = true;
+      video.addEventListener("loadedmetadata", () => { fig.hidden = false; }, { once: true });
+    }
+    if (reduceMotion) { video.controls = true; return; }
+    // play only while on screen
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(entries => entries.forEach(e => {
+        if (e.isIntersecting) video.play().catch(() => {}); else video.pause();
+      }), { threshold: 0.4 }).observe(video);
+    } else {
+      video.autoplay = true;
+    }
+  });
+
+  // ---- project filter ----
+  const cards = Array.from(document.querySelectorAll("#projects .proj"));
+  const filterBtns = document.querySelectorAll(".filters button");
+  filterBtns.forEach(b => {
+    const f = b.dataset.filter;
+    const n = f === "all" ? cards.length : cards.filter(c => c.dataset.tags.split(" ").includes(f)).length;
+    b.querySelector(".n").textContent = n;
+    b.addEventListener("click", () => {
+      filterBtns.forEach(o => o.setAttribute("aria-pressed", String(o === b)));
+      let visible = 0;
+      cards.forEach(c => {
+        const on = f === "all" || c.dataset.tags.split(" ").includes(f);
+        c.hidden = !on;
+        if (on) visible++;
+      });
+      document.getElementById("empty").hidden = visible > 0;
+    });
+  });
+})();
+</script>
+</body>
+</html>
