@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Noah Simpson Portfolio</title>
-<meta name="description" content="Noah Simpson: game and graphics programmer. Gameplay systems in Unity and C#, engine and rendering work in C++ and OpenGL.">
+<meta name="description" content="Noah Simpson: gameplay programmer building combat, enemy, loot and progression systems in Unity and C++.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -145,7 +145,17 @@ section.block { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--l
 .proj.lead ul.points strong { font-weight: 600; }
 .media { margin: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--surface); line-height: 0; }
 .media[hidden] { display: none; }
-.media video, .media img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.media video { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.media img { width: 100%; height: auto; display: block; }
+.results { overflow-x: auto; }
+.results table { width: 100%; border-collapse: collapse; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.results caption { caption-side: top; text-align: left; font-weight: 600; padding-bottom: 12px; }
+.results th, .results td { padding: 10px 8px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.results thead th { color: var(--muted); font-weight: 500; border-bottom-color: var(--ink); }
+.results tbody th { text-align: left; font-weight: 600; padding-left: 0; }
+.results td.full { color: var(--accent); font-weight: 600; }
+.results td.none { color: var(--muted); }
+.results .note { margin-top: 12px; font-size: .875rem; color: var(--muted); }
 .proj.lead .media { grid-column: 1 / -1; }
 .proj.lead .figure-stat { margin-top: 8px; }
 .empty { grid-column: 1 / -1; color: var(--muted); padding: 24px 0; }
@@ -203,8 +213,8 @@ section.block { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--l
     <section class="hero" aria-labelledby="hero-title">
       <div>
         <h1 id="hero-title">Noah<br>Simpson</h1>
-        <p class="lede">Game and graphics programmer. I build gameplay systems in Unity and engine-level code in C++.</p>
-        <p class="sub">Final-year Bachelor of Software Engineering student. Recent work covers procedural dungeons, loot and difficulty systems, an active-ragdoll brawler and an OpenGL model viewer.</p>
+        <p class="lede">Gameplay programmer. I build combat, enemy, loot and progression systems in Unity and C++.</p>
+        <p class="sub">Final-year Bachelor of Software Engineering student. Recent work includes the dungeon, difficulty and loot systems for a team action RPG, and the ragdoll combat behind a four-player brawler.</p>
         <div class="cta">
           <a class="btn primary" href="#work">See projects</a>
           <a class="btn" href="#contact">Get in touch</a>
@@ -216,8 +226,8 @@ section.block { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--l
         <div class="controls">
           <div class="seg" role="group" aria-label="Generation method">
             <button type="button" data-method="random" aria-pressed="false">Random fill</button>
-            <button type="button" data-method="pure" aria-pressed="false">Pure CA</button>
-            <button type="button" data-method="hybrid" aria-pressed="true">Hybrid CA</button>
+            <button type="button" data-method="pure" aria-pressed="false">Cellular automata</button>
+            <button type="button" data-method="hybrid" aria-pressed="true">CA + flood fill</button>
           </div>
           <button type="button" class="link-btn" id="reseed">New seed</button>
         </div>
@@ -227,7 +237,7 @@ section.block { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--l
           <div><dt>Open floor</dt><dd id="r-floor">0%</dd></div>
           <div><dt>Separate caves</dt><dd id="r-caves">0</dd></div>
         </dl>
-        <figcaption id="map-cap">A 72 × 44 cave grown live with cellular automata, from my dungeon generation research. Switching method keeps the seed, so you can compare all three on the same noise.</figcaption>
+        <figcaption id="map-cap">A 72 × 44 cave grown live with cellular automata, the technique behind my dungeon generation research. Switching method keeps the seed, so you can compare them on the same noise.</figcaption>
       </figure>
     </section>
 
@@ -236,13 +246,13 @@ section.block { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--l
       <div class="block-head">
         <div>
           <h2 id="work-title">Projects</h2>
-          <p>Team and solo work across Unity and C++. The systems I owned are listed under each one.</p>
+          <p>Gameplay systems I built in team and solo projects, in Unity and C++.</p>
         </div>
         <div class="filters" role="group" aria-label="Filter projects">
           <button type="button" data-filter="all" aria-pressed="true">All<span class="n"></span></button>
           <button type="button" data-filter="unity" aria-pressed="false">Unity<span class="n"></span></button>
           <button type="button" data-filter="cpp" aria-pressed="false">C++<span class="n"></span></button>
-          <button type="button" data-filter="graphics" aria-pressed="false">Graphics<span class="n"></span></button>
+          <button type="button" data-filter="physics" aria-pressed="false">Physics<span class="n"></span></button>
           <button type="button" data-filter="research" aria-pressed="false">Research<span class="n"></span></button>
         </div>
       </div>
@@ -250,8 +260,15 @@ section.block { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--l
       <!-- media: drop clips in media/ using the file names below, a slot hides itself if its file is missing -->
       <div class="projects" id="projects">
 
+
+
+
+
+
+
+
         <article class="proj lead" data-tags="unity">
-          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/monolith.jpg"><source src="media/monolith.mp4" type="video/mp4"></video></figure>
+          <figure class="media"><img src="media/monolith.jpg" width="1600" height="829" alt="Monolith gameplay: a level 43 player casting Inferno in an isometric dungeon, with loot labels on the floor"></figure>
           <div class="intro">
             <h3>Monolith</h3>
             <p class="what">Team project, Unity and C#</p>
@@ -271,80 +288,74 @@ section.block { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--l
             </ul>
           </div>
         </article>
-
-        <article class="proj lead" data-tags="research">
-          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/ca-research.jpg"><source src="media/ca-research.mp4" type="video/mp4"></video></figure>
+        <article class="proj lead" data-tags="unity physics">
+          <figure class="media"><img src="media/stick-wars.png" width="1408" height="817" loading="lazy" alt="Stick Wars: a blue and a red stick fighter trading shots on a rooftop arena in round 1"></figure>
           <div class="intro">
-            <h3>Cellular Automata for Roguelike Dungeons</h3>
-            <p class="what">Research project</p>
-            <p class="desc">I benchmarked three ways of generating cave-style dungeons across a range of grid sizes, comparing how each one trades speed against playable, connected space. The map at the top of this page runs all three.</p>
-            <p class="figure-stat">540</p>
-            <p class="what">trials across three methods and multiple grid sizes</p>
-            <div class="tags"><span class="tag">Procedural generation</span><span class="tag">Benchmarking</span></div>
+            <h3>Stick Wars</h3>
+            <p class="what">Unity 6.3, PC and PlayStation 5</p>
+            <p class="desc">A four-player local brawler in the spirit of Stick Fight, where every fighter is a physics-driven ragdoll. Rounds run first to five points across rotating arenas.</p>
+            <div class="tags"><span class="tag">Unity</span><span class="tag">C#</span><span class="tag">Physics</span><span class="tag">Local multiplayer</span></div>
           </div>
-          <ul class="methods">
-            <li><strong>Random fill</strong><span>Noise only. The fastest baseline, with no structure.</span><button type="button" class="link-btn" data-show="random">Show on map</button></li>
-            <li><strong>Pure CA</strong><span>Smoothing passes turn noise into caves, but leave isolated pockets.</span><button type="button" class="link-btn" data-show="pure">Show on map</button></li>
-            <li><strong>Hybrid CA</strong><span>Cellular automata followed by a connectivity pass so every open tile is reachable.</span><button type="button" class="link-btn" data-show="hybrid">Show on map</button></li>
-          </ul>
+          <div class="owned">
+            <h4>Systems I built</h4>
+            <ul class="points">
+              <li><strong>Active ragdolls.</strong> Stick figures with muscle-driven joints, procedural animation and foot IK.</li>
+              <li><strong>Movement.</strong> Run, jump, wall bounce, fast fall and crouch.</li>
+              <li><strong>Combat.</strong> Punches and an air kick sharing one strike system, with health, headshots and round flow.</li>
+              <li><strong>Weapons.</strong> Twelve data-driven weapons, from pistols and shotguns to swords and spears, with pickup, throw and drop.</li>
+              <li><strong>Arenas.</strong> Five rotating arenas with moving, crumbling and lethal hazards.</li>
+            </ul>
+          </div>
         </article>
-
-        <article class="proj" data-tags="unity">
-          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/stick-wars.jpg"><source src="media/stick-wars.mp4" type="video/mp4"></video></figure>
-          <h3>Stick Wars</h3>
-          <p class="what">Unity 6.3, PC and PlayStation 5</p>
-          <p class="desc">A four-player local brawler in the spirit of Stick Fight, where every fighter is a physics-driven ragdoll.</p>
-          <ul class="points">
-            <li>Active-ragdoll stick figures with muscle-driven joints, procedural animation and foot IK</li>
-            <li>Run, jump, wall bounce and melee combat sharing one strike system</li>
-            <li>Twelve data-driven weapons, from pistols and shotguns to swords and spears</li>
-            <li>Five rotating arenas with moving, crumbling and lethal hazards</li>
-          </ul>
-          <div class="tags"><span class="tag">Unity</span><span class="tag">C#</span><span class="tag">Physics</span><span class="tag">Local multiplayer</span></div>
-        </article>
-
         <article class="proj" data-tags="cpp">
-          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/loot-damage.jpg"><source src="media/loot-damage.mp4" type="video/mp4"></video></figure>
+          <figure class="media"><img src="media/loot-damage.png" width="906" height="796" loading="lazy" alt="Console output of a 10,000-kill boss loot test comparing observed and expected drop rates for each rarity"></figure>
           <h3>C++ Loot Generator and Mass Damage Resolver</h3>
           <p class="what">Solo, C++20, Visual Studio</p>
           <p class="desc">Two ARPG systems in pure C++, written to show how memory layout and ownership affect real game code.</p>
           <ul class="points">
             <li>Loot generator rebuilt from Monolith's real loot tables and item modifier data</li>
+            <li>A 10,000-kill boss test keeps every rarity within 0.31 points of its expected drop rate, with no out-of-range rolls, slot rule breaks or duplicate affixes</li>
             <li>Mass projectile and AoE damage resolver written three ways: smart pointers, array of structures with generational handles, and structure of arrays</li>
             <li>All three versions produce identical results, so the benchmarks measure memory layout alone</li>
           </ul>
           <div class="tags"><span class="tag">C++20</span><span class="tag">Data-oriented design</span><span class="tag">Smart pointers</span><span class="tag">Benchmarks</span></div>
         </article>
-
-        <article class="proj" data-tags="cpp graphics">
-          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/model-viewer.jpg"><source src="media/model-viewer.mp4" type="video/mp4"></video></figure>
-          <h3>OpenGL Model Viewer</h3>
-          <p class="what">C++ and OpenGL</p>
-          <p class="desc">A model viewer written against raw OpenGL, with my own geometry generation and matrix maths.</p>
-          <ul class="points">
-            <li>UV sphere generation in an interleaved vertex format</li>
-            <li>Hand-written column-major matrices and frame-rate-independent rotation</li>
-          </ul>
-          <div class="tags"><span class="tag">C++</span><span class="tag">OpenGL</span><span class="tag">Rendering</span></div>
-        </article>
-
-        <!-- edit: cloth simulation details still needed -->
-        <article class="proj" data-tags="graphics">
+        <article class="proj" data-tags="physics">
           <figure class="media"><video muted loop playsinline preload="metadata" poster="media/cloth.jpg"><source src="media/cloth.mp4" type="video/mp4"></video></figure>
           <h3>Cloth Simulation</h3>
-          <p class="what">[Language and engine]</p>
-          <p class="desc">[One or two sentences on what the simulation does and how it works.]</p>
-          <div class="tags"><span class="tag">Simulation</span></div>
+          <p class="what">Interactive real-time demo</p>
+          <p class="desc">A cloth banner that hangs from a row of hooks, blows in the wind and drapes over a capsule. Every setting can be changed while it runs.</p>
+          <ul class="points">
+            <li>Adjustable wind speed and direction</li>
+            <li>Cloth width, height and number of hooks set live</li>
+            <li>Drop the cloth from its hooks or reset it</li>
+          </ul>
+          <div class="tags"><span class="tag">Simulation</span><span class="tag">Physics</span></div>
         </article>
-
-        <article class="proj" data-tags="unity">
-          <figure class="media"><video muted loop playsinline preload="metadata" poster="media/flipside.jpg"><source src="media/flipside.mp4" type="video/mp4"></video></figure>
-          <h3>Flipside</h3>
-          <p class="what">Solo, Unity, Android</p>
-          <p class="desc">A one-tap endless runner where every tap flips gravity. Built solo on a four-week development and two-week testing plan, with ads and in-app purchases.</p>
-          <div class="tags"><span class="tag">Unity</span><span class="tag">Android</span><span class="tag">Ads and IAP</span></div>
+        <article class="proj lead" data-tags="research">
+          <figure class="media"><img src="media/ca-research.png" width="1393" height="855" loading="lazy" alt="Benchmark tool showing a 300 by 300 hybrid dungeon above the results table for all three methods"></figure>
+          <div class="intro">
+            <h3>Cellular Automata for Roguelike Dungeons</h3>
+            <p class="what">Research project</p>
+            <p class="desc">I built a benchmark tool that generates dungeons with three methods across six grid sizes, from 20 × 20 up to 300 × 300, with 30 runs per size. A run counts as a complete level when the map is fully connected and has a player spawn and an exit.</p>
+            <p class="desc">Random fill never produced a complete level. Both cellular automata methods reached 100% from 200 × 200 up, and at 300 × 300 the hybrid's grammar pass cost about 0.2 ms per map.</p>
+            <p class="figure-stat">540</p>
+            <p class="what">runs: 3 methods, 6 grid sizes, 30 runs each</p>
+            <div class="tags"><span class="tag">Procedural generation</span><span class="tag">Benchmarking</span></div>
+          </div>
+          <div class="results">
+            <table>
+              <caption>Complete levels by grid size</caption>
+              <thead><tr><th scope="col">Method</th><th scope="col">20²</th><th scope="col">40²</th><th scope="col">80²</th><th scope="col">100²</th><th scope="col">200²</th><th scope="col">300²</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Random fill</th><td class="none">0%</td><td class="none">0%</td><td class="none">0%</td><td class="none">0%</td><td class="none">0%</td><td class="none">0%</td></tr>
+                <tr><th scope="row">Cellular automata</th><td>73.3%</td><td>83.3%</td><td>96.7%</td><td>93.3%</td><td class="full">100%</td><td class="full">100%</td></tr>
+                <tr><th scope="row">Hybrid CA + grammar</th><td>63.3%</td><td>83.3%</td><td>86.7%</td><td>96.7%</td><td class="full">100%</td><td class="full">100%</td></tr>
+              </tbody>
+            </table>
+            <p class="note">Share of 30 runs per size that produced a complete level. Average generation time at 300 × 300 was 8.04 ms for cellular automata and 8.25 ms for the hybrid.</p>
+          </div>
         </article>
-
         <p class="empty" id="empty" hidden>No projects with that tag yet.</p>
       </div>
     </section>
@@ -370,8 +381,8 @@ section.block { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--l
   </main>
 
   <footer class="contact" id="contact">
-    <h2>Looking for a graduate role in games</h2>
-    <p>I'm finishing my final semester and open to graduate and junior roles in gameplay, systems or graphics programming.</p>
+    <h2>Looking for a graduate gameplay programming role</h2>
+    <p>I'm finishing my final semester and open to graduate and junior gameplay programming roles.</p>
     <div class="links">
       <a class="btn primary" href="mailto:noahsimpson193@gmail.com">noahsimpson193@gmail.com</a>
       <a class="btn" href="https://github.com/NoahS193">GitHub</a>
